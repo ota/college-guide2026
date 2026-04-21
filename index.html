@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>阿南高専 情報コース — デモ一覧</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+      background: #f2f0ec;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: 900;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .sub {
+      font-size: 16px;
+      color: #aaa;
+      margin-bottom: 48px;
+    }
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 560px;
+    }
+    a {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+    }
+    .icon {
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+    .label {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .desc {
+      font-size: 13px;
+      color: #aaa;
+      margin-top: 3px;
+    }
+    .credit {
+      margin-top: 48px;
+      font-size: 14px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>デモ一覧</h1>
+
+  <div class="list">
+    <a href="image-recognition-app.html">
+      <div class="icon">🐶</div>
+      <div>
+        <div class="label">画像認識</div>
+        <div class="desc">入力画像をAIが判定するアプリ（iPad用）</div>
+      </div>
+    </a>
+    <a href="training-dashboard.html">
+      <div class="icon">📊</div>
+      <div>
+        <div class="label">AI Training Dashboard</div>
+        <div class="desc">学習の様子をリアルタイムで表示するダッシュボード（4Kモニター用）</div>
+      </div>
+    </a>
+  </div>
+</body>
+</html>

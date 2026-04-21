@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Training Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0b0e14;
+      color: #e2e8f0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.4vw;
+      height: 6vh;
+      background: #0f1318;
+      border-bottom: 1px solid #1e2530;
+      flex-shrink: 0;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.2vw;
+    }
+    .header-title {
+      font-size: 1.9vw;
+      font-weight: 700;
+      color: #f1f5f9;
+      letter-spacing: -0.02em;
+    }
+    .badge {
+      font-size: 0.9vw;
+      font-weight: 600;
+      padding: 0.3vh 0.7vw;
+      border-radius: 4px;
+      background: #22c55e22;
+      color: #22c55e;
+      border: 1px solid #22c55e44;
+      letter-spacing: 0.05em;
+    }
+    .badge.running::before {
+      content: '● ';
+      animation: blink 1.2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .header-right {
+      display: flex;
+      gap: 1.2vw;
+      font-size: 0.85vw;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .header-right span { color: #94a3b8; }
+
+    /* ── Main grid ── */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto 1fr 1fr;
+      gap: 1vh 1vw;
+      padding: 1.2vh 1.8vw 1.2vh;
+      overflow: hidden;
+    }
+
+    /* ── Metric cards row ── */
+    .metrics-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1vw;
+    }
+    .metric-card {
+      background: #131820;
+      border: 1px solid #1e2530;
+      border-radius: 10px;
+      padding: 1.4vh 1.2vw;
+    }
+    .metric-label {
+      font-size: 0.9vw;
+      font-weight: 500;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.6vh;
+    }
+    .metric-value {
+      font-size: 2.4vw;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 0.4vh;
+      white-space: nowrap;
+    }
+    .metric-sub {
+      font-size: 0.75vw;
+      color: #475569;
+      white-space: nowrap;
+    }
+    .metric-sub .up   { color: #22c55e; }
+    .metric-sub .down { color: #f87171; }
+
+    .c-green  { color: #22c55e; }
+    .c-blue   { color: #60a5fa; }
+    .c-amber  { color: #fbbf24; }
+    .c-purple { color: #a78bfa; }
+    .c-red    { color: #f87171; }
+    .c-cyan   { color: #22d3ee; }
+
+    /* ── Panel base ── */
+    .panel {
+      background: #131820;
+      border: 1px solid #1e2530;
+      border-radius: 10px;
+      padding: 1.4vh 1.4vw;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-title {
+      font-size: 1vw;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1vh;
+      flex-shrink: 0;
+    }
+
+    /* ── Chart panels ── */
+    .chart-panel { grid-column: span 1; }
+    .chart-panel svg { flex: 1; width: 100%; }
+
+    /* ── Epoch progress ── */
+    .epoch-panel { grid-column: span 1; }
+    .epoch-big {
+      font-size: 4.2vw;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: #f1f5f9;
+      line-height: 1;
+    }
+    .epoch-big span { font-size: 1.6vw; color: #475569; font-weight: 400; }
+    .progress-track {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.2vh;
+      margin-top: 1.5vh;
+    }
+    .prog-row { display: flex; flex-direction: column; gap: 0.4vh; }
+    .prog-meta { display: flex; justify-content: space-between; font-size: 0.9vw; color: #64748b; white-space: nowrap; }
+    .prog-bar-track {
+      height: 0.7vh;
+      background: #1e2530;
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .prog-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 0.3s;
+    }
+
+    /* ── Log panel ── */
+    .log-panel { grid-column: span 1; grid-row: span 2; }
+    .log-panel .log-body {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35vh;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95vw;
+    }
+    .log-line { line-height: 1.5; white-space: nowrap; }
+    .log-line .ts { color: #334155; margin-right: 0.5vw; }
+    .lg-info  { color: #60a5fa; }
+    .lg-ok    { color: #22c55e; }
+    .lg-warn  { color: #fbbf24; }
+    .lg-dim   { color: #475569; }
+    .lg-data  { color: #e2e8f0; }
+
+    /* ── GPU panel ── */
+    .gpu-panel { grid-column: span 1; }
+    .gpu-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2vh 1.2vw;
+    }
+    .gpu-item {}
+    .gpu-item-label { font-size: 0.85vw; color: #64748b; margin-bottom: 0.4vh; white-space: nowrap; }
+    .gpu-item-val { font-size: 1.5vw; font-weight: 700; margin-bottom: 0.4vh; }
+    .mini-bar-track {
+      height: 0.5vh;
+      background: #1e2530;
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .mini-bar-fill { height: 100%; border-radius: 100px; }
+
+    /* ── Confusion / sample panel ── */
+    .sample-panel { grid-column: span 1; }
+    .sample-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8vh;
+    }
+    .sample-card {
+      background: #0b0e14;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4vh;
+      padding: 0.8vh;
+      border: 1px solid #1e2530;
+    }
+    .sample-emoji { font-size: 2.2vw; }
+    .sample-label { font-size: 0.85vw; color: #94a3b8; font-weight: 600; }
+    .sample-conf  { font-size: 0.9vw; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-title">AI Training Dashboard</div>
+    <div class="badge running">TRAINING</div>
+  </div>
+  <div class="header-right">
+    Model: <span>ResNet-50 v2</span>
+    &nbsp;|&nbsp;
+    Dataset: <span>ImageNet-subset 12,800 imgs</span>
+    &nbsp;|&nbsp;
+    Device: <span>GPU 0 · NVIDIA RTX 4090</span>
+    &nbsp;|&nbsp;
+    Started: <span>09:30:00</span>
+    &nbsp;|&nbsp;
+    Elapsed: <span>00:11:23</span>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Metric cards -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-label">Train Loss</div>
+      <div class="metric-value c-red">0.3241</div>
+      <div class="metric-sub"><span class="down">↓ 0.0182</span> from last epoch</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Val Loss</div>
+      <div class="metric-value c-amber">0.4108</div>
+      <div class="metric-sub"><span class="down">↓ 0.0094</span> from last epoch</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Train Acc</div>
+      <div class="metric-value c-green">91.4%</div>
+      <div class="metric-sub"><span class="up">↑ 0.8%</span> from last epoch</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Val Acc</div>
+      <div class="metric-value c-blue">87.2%</div>
+      <div class="metric-sub"><span class="up">↑ 0.5%</span> from last epoch</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Learning Rate</div>
+      <div class="metric-value c-purple">1e-3</div>
+      <div class="metric-sub">Scheduler: CosineAnnealing</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Batch / Step</div>
+      <div class="metric-value c-cyan">128 <span style="font-size:0.9vw;color:#475569">/ 342</span></div>
+      <div class="metric-sub">Speed: 312 img/s</div>
+    </div>
+  </div>
+
+  <!-- Loss chart -->
+  <div class="panel chart-panel">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      Loss Curve
+      <span style="display:flex;gap:0.8vw;font-size:0.75vw;font-weight:500;">
+        <span style="color:#f87171">— Train</span>
+        <span style="color:#fbbf24">- - Val</span>
+      </span>
+    </div>
+    <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="lossGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f87171" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#f87171" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="valLossGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Grid -->
+      <line x1="0" y1="40" x2="400" y2="40" stroke="#1e2530" stroke-width="0.5"/>
+      <line x1="0" y1="80" x2="400" y2="80" stroke="#1e2530" stroke-width="0.5"/>
+      <line x1="0" y1="120" x2="400" y2="120" stroke="#1e2530" stroke-width="0.5"/>
+      <!-- Train loss fill -->
+      <path d="M20,130 C40,120 55,108 70,98 C90,84 105,72 120,63 C140,52 155,47 170,43 C190,38 205,36 220,34 C240,32 255,31 270,30 C290,29 305,28.5 320,28 C340,27.5 355,27 370,26.5 L370,155 L20,155 Z"
+            fill="url(#lossGrad)"/>
+      <!-- Train loss line -->
+      <path d="M20,130 C40,120 55,108 70,98 C90,84 105,72 120,63 C140,52 155,47 170,43 C190,38 205,36 220,34 C240,32 255,31 270,30 C290,29 305,28.5 320,28 C340,27.5 355,27 370,26.5"
+            fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round"/>
+      <!-- Val loss fill -->
+      <path d="M20,138 C40,128 55,116 70,108 C90,96 105,86 120,78 C140,69 155,64 170,61 C190,57 205,54 220,52 C240,50 255,49 270,48 C290,47 305,46 320,45.5 C340,45 355,44.5 370,44 L370,155 L20,155 Z"
+            fill="url(#valLossGrad)"/>
+      <!-- Val loss line -->
+      <path d="M20,138 C40,128 55,116 70,108 C90,96 105,86 120,78 C140,69 155,64 170,61 C190,57 205,54 220,52 C240,50 255,49 270,48 C290,47 305,46 320,45.5 C340,45 355,44.5 370,44"
+            fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,3" stroke-linecap="round"/>
+      <!-- Legend -->
+    </svg>
+  </div>
+
+  <!-- Accuracy chart -->
+  <div class="panel chart-panel">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      Accuracy Curve
+      <span style="display:flex;gap:0.8vw;font-size:0.75vw;font-weight:500;">
+        <span style="color:#22c55e">— Train</span>
+        <span style="color:#60a5fa">- - Val</span>
+      </span>
+    </div>
+    <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="accGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#22c55e" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="valAccGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <line x1="0" y1="40" x2="400" y2="40" stroke="#1e2530" stroke-width="0.5"/>
+      <line x1="0" y1="80" x2="400" y2="80" stroke="#1e2530" stroke-width="0.5"/>
+      <line x1="0" y1="120" x2="400" y2="120" stroke="#1e2530" stroke-width="0.5"/>
+      <!-- Train acc fill -->
+      <path d="M20,140 C40,130 55,116 70,104 C90,88 105,74 120,62 C140,50 155,42 170,37 C190,32 205,29 220,27 C240,25 255,24 270,23 C290,22 305,21.5 320,21 C340,20.5 355,20 370,20 L370,155 L20,155 Z"
+            fill="url(#accGrad)"/>
+      <path d="M20,140 C40,130 55,116 70,104 C90,88 105,74 120,62 C140,50 155,42 170,37 C190,32 205,29 220,27 C240,25 255,24 270,23 C290,22 305,21.5 320,21 C340,20.5 355,20 370,20"
+            fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+      <!-- Val acc fill -->
+      <path d="M20,145 C40,136 55,123 70,114 C90,100 105,88 120,78 C140,68 155,61 170,57 C190,53 205,50 220,48 C240,46 255,45 270,44 C290,43 305,42.5 320,42 C340,41.5 355,41 370,40.5 L370,155 L20,155 Z"
+            fill="url(#valAccGrad)"/>
+      <path d="M20,145 C40,136 55,123 70,114 C90,100 105,88 120,78 C140,68 155,61 170,57 C190,53 205,50 220,48 C240,46 255,45 270,44 C290,43 305,42.5 320,42 C340,41.5 355,41 370,40.5"
+            fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="5,3" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- Epoch / progress -->
+  <div class="panel epoch-panel">
+    <div class="panel-title">Progress</div>
+    <div class="epoch-big">18 <span>/ 50 epochs</span></div>
+    <div class="progress-track">
+      <div class="prog-row">
+        <div class="prog-meta"><span>Overall</span><span>36%</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" style="width:36%;background:#60a5fa;"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span>Current Epoch</span><span>342 / 400 steps</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" style="width:85%;background:#22c55e;"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span>GPU Memory</span><span>18.4 / 24 GB</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" style="width:77%;background:#a78bfa;"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span>ETA</span><span style="color:#22d3ee">~ 00:18:40</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" style="width:36%;background:#22d3ee;"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log panel -->
+  <div class="panel log-panel">
+    <div class="panel-title">Training Log</div>
+    <div class="log-body">
+      <div class="log-line lg-dim"><span class="ts">09:30:01</span>Initializing training pipeline...</div>
+      <div class="log-line lg-info"><span class="ts">09:30:02</span>Connecting to GPU device: cuda:0</div>
+      <div class="log-line lg-ok"><span class="ts">09:30:02</span>GPU connection established ✓</div>
+      <div class="log-line lg-dim"><span class="ts">09:30:03</span>Loading dataset: ImageNet-subset</div>
+      <div class="log-line lg-ok"><span class="ts">09:30:04</span>Dataset loaded — 12,800 train / 3,200 val ✓</div>
+      <div class="log-line lg-dim"><span class="ts">09:30:05</span>Building model: ResNet-50 v2</div>
+      <div class="log-line lg-ok"><span class="ts">09:30:06</span>Model initialized (25.6M params) ✓</div>
+      <div class="log-line lg-dim"><span class="ts">09:30:06</span>Optimizer: Adam  lr=1e-3  weight_decay=1e-4</div>
+      <div class="log-line lg-info"><span class="ts">09:30:07</span>Starting training — 50 epochs</div>
+      <div class="log-line lg-dim"><span class="ts">09:30:07</span>Epoch  1/50  loss=1.8821  acc=42.3%</div>
+      <div class="log-line lg-dim"><span class="ts">09:30:30</span>Epoch  5/50  loss=1.1204  acc=63.1%</div>
+      <div class="log-line lg-dim"><span class="ts">09:31:10</span>Epoch 10/50  loss=0.7832  acc=75.8%</div>
+      <div class="log-line lg-dim"><span class="ts">09:32:00</span>Epoch 15/50  loss=0.5241  acc=85.3%</div>
+      <div class="log-line lg-ok"><span class="ts">09:33:01</span>Epoch 17/50  val_acc=86.7%  best model saved ✓</div>
+      <div class="log-line lg-warn"><span class="ts">09:33:22</span>Epoch 18/50  loss=0.3241  acc=91.4%  [running]</div>
+      <div class="log-line lg-dim"><span class="ts">09:33:22</span>Step 342/400  batch_loss=0.3018</div>
+    </div>
+  </div>
+
+  <!-- GPU stats -->
+  <div class="panel gpu-panel">
+    <div class="panel-title">System</div>
+    <div class="gpu-grid">
+      <div class="gpu-item">
+        <div class="gpu-item-label">GPU Utilization</div>
+        <div class="gpu-item-val c-green">94%</div>
+        <div class="mini-bar-track"><div class="mini-bar-fill" style="width:94%;background:#22c55e;"></div></div>
+      </div>
+      <div class="gpu-item">
+        <div class="gpu-item-label">GPU Temp</div>
+        <div class="gpu-item-val c-amber">71°C</div>
+        <div class="mini-bar-track"><div class="mini-bar-fill" style="width:71%;background:#fbbf24;"></div></div>
+      </div>
+      <div class="gpu-item">
+        <div class="gpu-item-label">GPU Memory</div>
+        <div class="gpu-item-val c-purple">18.4 GB</div>
+        <div class="mini-bar-track"><div class="mini-bar-fill" style="width:77%;background:#a78bfa;"></div></div>
+      </div>
+      <div class="gpu-item">
+        <div class="gpu-item-label">Power Draw</div>
+        <div class="gpu-item-val c-red">318 W</div>
+        <div class="mini-bar-track"><div class="mini-bar-fill" style="width:79%;background:#f87171;"></div></div>
+      </div>
+      <div class="gpu-item">
+        <div class="gpu-item-label">CPU Usage</div>
+        <div class="gpu-item-val c-blue">38%</div>
+        <div class="mini-bar-track"><div class="mini-bar-fill" style="width:38%;background:#60a5fa;"></div></div>
+      </div>
+      <div class="gpu-item">
+        <div class="gpu-item-label">RAM</div>
+        <div class="gpu-item-val c-cyan">22.1 GB</div>
+        <div class="mini-bar-track"><div class="mini-bar-fill" style="width:55%;background:#22d3ee;"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample predictions -->
+  <div class="panel sample-panel">
+    <div class="panel-title">Sample Predictions</div>
+    <div class="sample-grid">
+      <div class="sample-card">
+        <div class="sample-emoji">🐶</div>
+        <div class="sample-label">Dog</div>
+        <div class="sample-conf c-green">98.2%</div>
+      </div>
+      <div class="sample-card">
+        <div class="sample-emoji">🌸</div>
+        <div class="sample-label">Flower</div>
+        <div class="sample-conf c-green">94.7%</div>
+      </div>
+      <div class="sample-card">
+        <div class="sample-emoji">🚗</div>
+        <div class="sample-label">Car</div>
+        <div class="sample-conf c-green">91.3%</div>
+      </div>
+      <div class="sample-card">
+        <div class="sample-emoji">🐱</div>
+        <div class="sample-label">Cat</div>
+        <div class="sample-conf c-amber">78.4%</div>
+      </div>
+      <div class="sample-card">
+        <div class="sample-emoji">🏔️</div>
+        <div class="sample-label">Mountain</div>
+        <div class="sample-conf c-green">88.1%</div>
+      </div>
+      <div class="sample-card">
+        <div class="sample-emoji">✈️</div>
+        <div class="sample-label">Airplane</div>
+        <div class="sample-conf c-red">61.2%</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
