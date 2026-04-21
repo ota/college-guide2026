@@ -11,7 +11,7 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #0b0e14;
+      background: #0c1a3a;
       color: #e2e8f0;
       width: 100vw;
       height: 100vh;
@@ -27,8 +27,8 @@
       justify-content: space-between;
       padding: 0 2.4vw;
       height: 6vh;
-      background: #0f1318;
-      border-bottom: 1px solid #1e2530;
+      background: #112040;
+      border-bottom: 1px solid #253d6e;
       flex-shrink: 0;
     }
     .header-left {
@@ -61,7 +61,7 @@
       display: flex;
       gap: 1.2vw;
       font-size: 0.85vw;
-      color: #64748b;
+      color: #6b85b5;
       white-space: nowrap;
     }
     .header-right span { color: #94a3b8; }
@@ -85,15 +85,15 @@
       gap: 1vw;
     }
     .metric-card {
-      background: #131820;
-      border: 1px solid #1e2530;
+      background: #162648;
+      border: 1px solid #253d6e;
       border-radius: 10px;
       padding: 1.4vh 1.2vw;
     }
     .metric-label {
       font-size: 0.9vw;
       font-weight: 500;
-      color: #64748b;
+      color: #6b85b5;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       margin-bottom: 0.6vh;
@@ -108,7 +108,7 @@
     }
     .metric-sub {
       font-size: 0.75vw;
-      color: #475569;
+      color: #4f6d9e;
       white-space: nowrap;
     }
     .metric-sub .up   { color: #22c55e; }
@@ -123,8 +123,8 @@
 
     /* ── Panel base ── */
     .panel {
-      background: #131820;
-      border: 1px solid #1e2530;
+      background: #162648;
+      border: 1px solid #253d6e;
       border-radius: 10px;
       padding: 1.4vh 1.4vw;
       display: flex;
@@ -154,7 +154,7 @@
       color: #f1f5f9;
       line-height: 1;
     }
-    .epoch-big span { font-size: 1.6vw; color: #475569; font-weight: 400; }
+    .epoch-big span { font-size: 1.6vw; color: #4f6d9e; font-weight: 400; }
     .progress-track {
       flex: 1;
       display: flex;
@@ -164,10 +164,10 @@
       margin-top: 1.5vh;
     }
     .prog-row { display: flex; flex-direction: column; gap: 0.4vh; }
-    .prog-meta { display: flex; justify-content: space-between; font-size: 0.9vw; color: #64748b; white-space: nowrap; }
+    .prog-meta { display: flex; justify-content: space-between; font-size: 0.9vw; color: #6b85b5; white-space: nowrap; }
     .prog-bar-track {
       height: 0.7vh;
-      background: #1e2530;
+      background: #253d6e;
       border-radius: 100px;
       overflow: hidden;
     }
@@ -189,11 +189,11 @@
       font-size: 0.95vw;
     }
     .log-line { line-height: 1.5; white-space: nowrap; }
-    .log-line .ts { color: #334155; margin-right: 0.5vw; }
+    .log-line .ts { color: #3d5a8a; margin-right: 0.5vw; }
     .lg-info  { color: #60a5fa; }
     .lg-ok    { color: #22c55e; }
     .lg-warn  { color: #fbbf24; }
-    .lg-dim   { color: #475569; }
+    .lg-dim   { color: #4f6d9e; }
     .lg-data  { color: #e2e8f0; }
 
     /* ── GPU panel ── */
@@ -205,11 +205,11 @@
       gap: 1.2vh 1.2vw;
     }
     .gpu-item {}
-    .gpu-item-label { font-size: 0.85vw; color: #64748b; margin-bottom: 0.4vh; white-space: nowrap; }
+    .gpu-item-label { font-size: 0.85vw; color: #6b85b5; margin-bottom: 0.4vh; white-space: nowrap; }
     .gpu-item-val { font-size: 1.5vw; font-weight: 700; margin-bottom: 0.4vh; }
     .mini-bar-track {
       height: 0.5vh;
-      background: #1e2530;
+      background: #253d6e;
       border-radius: 100px;
       overflow: hidden;
     }
@@ -224,7 +224,7 @@
       gap: 0.8vh;
     }
     .sample-card {
-      background: #0b0e14;
+      background: #0c1a3a;
       border-radius: 8px;
       display: flex;
       flex-direction: column;
@@ -232,7 +232,7 @@
       justify-content: center;
       gap: 0.4vh;
       padding: 0.8vh;
-      border: 1px solid #1e2530;
+      border: 1px solid #253d6e;
     }
     .sample-emoji { font-size: 2.2vw; }
     .sample-label { font-size: 0.85vw; color: #94a3b8; font-weight: 600; }
@@ -292,7 +292,7 @@
     </div>
     <div class="metric-card">
       <div class="metric-label">Batch / Step</div>
-      <div class="metric-value c-cyan">128 <span style="font-size:0.9vw;color:#475569">/ 342</span></div>
+      <div class="metric-value c-cyan">128 <span style="font-size:0.9vw;color:#4f6d9e">/ 342</span></div>
       <div class="metric-sub">Speed: 312 img/s</div>
     </div>
   </div>
@@ -318,9 +318,9 @@
         </linearGradient>
       </defs>
       <!-- Grid -->
-      <line x1="0" y1="40" x2="400" y2="40" stroke="#1e2530" stroke-width="0.5"/>
-      <line x1="0" y1="80" x2="400" y2="80" stroke="#1e2530" stroke-width="0.5"/>
-      <line x1="0" y1="120" x2="400" y2="120" stroke="#1e2530" stroke-width="0.5"/>
+      <line x1="0" y1="40" x2="400" y2="40" stroke="#253d6e" stroke-width="0.5"/>
+      <line x1="0" y1="80" x2="400" y2="80" stroke="#253d6e" stroke-width="0.5"/>
+      <line x1="0" y1="120" x2="400" y2="120" stroke="#253d6e" stroke-width="0.5"/>
       <!-- Train loss fill -->
       <path d="M20,130 C40,120 55,108 70,98 C90,84 105,72 120,63 C140,52 155,47 170,43 C190,38 205,36 220,34 C240,32 255,31 270,30 C290,29 305,28.5 320,28 C340,27.5 355,27 370,26.5 L370,155 L20,155 Z"
             fill="url(#lossGrad)"/>
@@ -357,9 +357,9 @@
           <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
         </linearGradient>
       </defs>
-      <line x1="0" y1="40" x2="400" y2="40" stroke="#1e2530" stroke-width="0.5"/>
-      <line x1="0" y1="80" x2="400" y2="80" stroke="#1e2530" stroke-width="0.5"/>
-      <line x1="0" y1="120" x2="400" y2="120" stroke="#1e2530" stroke-width="0.5"/>
+      <line x1="0" y1="40" x2="400" y2="40" stroke="#253d6e" stroke-width="0.5"/>
+      <line x1="0" y1="80" x2="400" y2="80" stroke="#253d6e" stroke-width="0.5"/>
+      <line x1="0" y1="120" x2="400" y2="120" stroke="#253d6e" stroke-width="0.5"/>
       <!-- Train acc fill -->
       <path d="M20,140 C40,130 55,116 70,104 C90,88 105,74 120,62 C140,50 155,42 170,37 C190,32 205,29 220,27 C240,25 255,24 270,23 C290,22 305,21.5 320,21 C340,20.5 355,20 370,20 L370,155 L20,155 Z"
             fill="url(#accGrad)"/>
